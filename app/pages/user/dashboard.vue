@@ -1,133 +1,73 @@
 <template>
-  <div class="min-h-screen bg-slate-50">
-    <!-- Navbar แถบด้านบน -->
-    <div class="bg-white border-b border-gray-200 px-6 py-3 flex justify-between items-center sticky top-0 z-50 shadow-sm">
-      <div class="flex items-center space-x-2">
-        <span class="text-2xl font-bold text-blue-600">📊 ระบบประเมินผล</span>
+  <div class="flex h-screen bg-slate-50">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-gradient-to-b from-blue-600 to-blue-800 text-white flex flex-col shadow-xl">
+      <div class="px-6 py-5 text-xl font-bold border-b border-white/10">
+           ระบบประเมินผล
       </div>
-      
-      <!-- ฝั่งขวา: รูปโปรไฟล์และปุ่ม Logout -->
-      <div class="flex items-center space-x-4">
-        <div class="flex items-center space-x-2">
-          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS11Yp9ac3eFtb8dlDG0Gsgihz5ddDDERdKtTKuM0O5Mw&s=10" alt="Profile" class="w-9 h-9 rounded-full object-cover border border-gray-200">
-          <span class="text-sm font-medium text-gray-700 hidden sm:inline">Username</span>
+
+      <!-- โปรไฟล์ -->
+      <div class="flex flex-col items-center py-6 border-b border-white/10">
+        <div class="w-20 h-20 rounded-full bg-white/20 ring-4 ring-white/30 flex items-center justify-center text-3xl font-bold">
+          {{ initial }}
         </div>
-        <!-- ปุ่ม Logout -->
-        <button @click="logout" class="bg-red-300 hover:bg-red-700 text-white px-4 py-2 rounded-md transition text-sm">
+        <p class="mt-3 font-medium">{{ username }}</p>
+        <p class="text-xs text-blue-200">ผู้ใช้งาน</p>
+      </div>
+
+      <!-- เมนู -->
+      <nav class="flex-1 p-4 space-y-1">
+        <NuxtLink
+          v-for="menu in menus"
+          :key="menu.to"
+          :to="menu.to"
+          exact-active-class="bg-white/20 font-semibold shadow-inner"
+          class="flex items-center gap-3 px-4 py-3 rounded-xl text-blue-50 hover:bg-white/10 transition"
+        >
+          <span class="text-lg">{{ menu.icon }}</span>
+          <span>{{ menu.label }}</span>
+        </NuxtLink>
+      </nav>
+
+      <!-- Logout -->
+      <div class="p-4 border-t border-white/10">
+        <button
+          class="w-full py-2.5 rounded-xl bg-white/10 hover:bg-red-500 transition"
+          @click="logout"
+        >
           🚪 ออกจากระบบ
         </button>
       </div>
-    </div>
+    </aside>
 
-    <!-- ส่วนเนื้อหาหลัก -->
-    <div class="p-6">
-      <div class="flex justify-between items-center mb-6">
-        <div>
-          <h1 class="text-2xl font-bold text-gray-800">ยินดีต้อนรับสู่ระบบประเมิน</h1>
-          <p class="text-sm text-gray-500">ภาพรวมข้อมูลและการทำรายการของคุณในวันนี้</p>
-        </div>
-        <div class="text-sm text-gray-500">
-          วันที่ล็อกอิน: {{ date }}
-        </div>
-      </div>
-
-      <!-- สถิติ / การ์ดสรุปข้อมูล -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center space-x-4">
-          <div class="p-3 bg-blue-100 text-blue-600 rounded-xl text-2xl">📊</div>
-          <div>
-            <p class="text-sm text-gray-500 font-medium">ทำแบบประเมินแล้ว</p>
-            <h3 class="text-2xl font-bold text-gray-800">12 ครั้ง</h3>
-          </div>
-        </div>
-
-        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center space-x-4">
-          <div class="p-3 bg-green-100 text-green-600 rounded-xl text-2xl">✅</div>
-          <div>
-            <p class="text-sm text-gray-500 font-medium">ประเมินผ่านเกณฑ์</p>
-            <h3 class="text-2xl font-bold text-gray-800">10 ครั้ง</h3>
-          </div>
-        </div>
-
-        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center space-x-4">
-          <div class="p-3 bg-amber-100 text-amber-600 rounded-xl text-2xl">⏳</div>
-          <div>
-            <p class="text-sm text-gray-500 font-medium">รอการตรวจสอบ</p>
-            <h3 class="text-2xl font-bold text-gray-800">2 ครั้ง</h3>
-          </div>
-        </div>
-      </div>
-
-      <!-- ตารางและเมนูลัด -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 lg:col-span-2">
-          <h2 class="text-lg font-bold text-gray-800 mb-4">ประวัติการประเมินล่าสุด</h2>
-          <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
-              <thead>
-                <tr class="border-b border-gray-200 text-gray-500 text-sm">
-                  <th class="pb-3">ชุดการประเมิน</th>
-                  <th class="pb-3">วันที่ทำ</th>
-                  <th class="pb-3">คะแนน</th>
-                  <th class="pb-3">สถานะ</th>
-                </tr>
-              </thead>
-              <tbody class="text-sm text-gray-700 divide-y divide-gray-100">
-                <tr>
-                  <td class="py-3 font-medium">แบบประเมินความพึงพอใจทั่วไป</td>
-                  <td class="py-3">30 ต.ค. 2569</td>
-                  <td class="py-3 text-blue-600 font-bold">85/100</td>
-                  <td class="py-3">
-                    <span class="px-2.5 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">ผ่าน</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="py-3 font-medium">แบบทดสอบทักษะดิจิทัลเบื้องต้น</td>
-                  <td class="py-3">28 ต.ค. 2569</td>
-                  <td class="py-3 text-blue-600 font-bold">90/100</td>
-                  <td class="py-3">
-                    <span class="px-2.5 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">ผ่าน</span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-          <h2 class="text-lg font-bold text-gray-800 mb-4">เข้าทำแบบประเมินด่วน</h2>
-          <div class="space-y-3">
-            <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-xl transition duration-200 text-sm">
-              📝 เริ่มทำแบบประเมินใหม่
-            </button>
-            <NuxtLink to="/user/Dashboard/profile" class="block w-full text-center border border-gray-200 hover:bg-gray-50 text-gray-700 font-medium py-3 px-4 rounded-xl transition duration-200 text-sm">
-              👤 ตรวจสอบข้อมูลโปรไฟล์
-            </NuxtLink>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- เนื้อหา -->
+    <main class="flex-1 overflow-y-auto p-6">
+      <NuxtPage />
+    </main>
   </div>
 </template>
 
 <script setup>
-import { useUserStore } from '#imports';
+const store = useUserStore()
+const token = useCookie('token')
 
-const userStore = useUserStore()
-const token = useCookie("token")
+const username = computed(() => store.user?.username || store.user?.fname || 'username')
+const initial = computed(() => username.value.charAt(0).toUpperCase())
 
-const logout = async () => {
-  userStore.Logout()
+// ใช้ตัวพิมพ์เล็กให้ตรงกับชื่อโฟลเดอร์ pages/user/dashboard
+const menus = [
+  { icon: '', label: 'หน้าแรก', to: '/user/dashboard' },
+  { icon: '', label: 'แก้ไขโปรไฟล์', to: '/user/dashboard/profile' },
+  { icon: '', label: 'สรุปการประเมิน', to: '/user/dashboard/result' }
+]
+
+async function logout() {
+  store.Logout()
   token.value = null
   await navigateTo('/')
 }
 
-const date = new Date().toLocaleDateString('th-TH', {
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric'
+onMounted(() => {
+  store.LoadUser()
 })
 </script>
-
-<style scoped>
-</style>
